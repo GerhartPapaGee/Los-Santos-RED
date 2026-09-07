@@ -28,7 +28,8 @@ public class GangRetaliation
     private int TimesPlayerDefendedRetaliation;
 
 
-    public GangRetaliation(IGangTerritoryManageable player, GangTerritoryManager gangTerritoryManager, uint gameTimeWarEnded, Gang targetGang, List<Zone> zonesToAttack, ISettingsProvideable settings)
+    public GangRetaliation(IGangTerritoryManageable player, GangTerritoryManager gangTerritoryManager, uint gameTimeWarEnded, Gang targetGang, List<Zone> zonesToAttack, 
+        ISettingsProvideable settings, Vector3 centerPoint)
     {
         Player = player;
         GameTimeRetaliationStarted = gameTimeWarEnded;
@@ -36,8 +37,10 @@ public class GangRetaliation
         ZonesToAttack = zonesToAttack;
         GangTerritoryManager = gangTerritoryManager;
         Settings = settings;
+        CenterPoint = centerPoint;
     }
-    public GangRetaliation(IGangTerritoryManageable player, GangTerritoryManager gangTerritoryManager, uint gameTimeWarEnded, Gang targetGang, List<Zone> zonesToAttack, ISettingsProvideable settings, int timesPlayerDefendedRetaliation)
+    public GangRetaliation(IGangTerritoryManageable player, GangTerritoryManager gangTerritoryManager, uint gameTimeWarEnded, Gang targetGang, List<Zone> zonesToAttack, 
+        ISettingsProvideable settings, int timesPlayerDefendedRetaliation, Vector3 centerPoint)
     {
         Player = player;
         GameTimeRetaliationStarted = gameTimeWarEnded;
@@ -45,12 +48,14 @@ public class GangRetaliation
         ZonesToAttack = zonesToAttack;
         GangTerritoryManager = gangTerritoryManager;
         Settings = settings;
-        TimesPlayerDefendedRetaliation = timesPlayerDefendedRetaliation;
+        TimesPlayerDefendedRetaliation = timesPlayerDefendedRetaliation;     
+        CenterPoint = centerPoint;
     }
     public bool IsWarfareActive { get; private set; }
     public bool IsEnded { get; private set; }
     public bool HasPlayerEnteredArea { get; private set; }
     public Gang TargetGang { get; private set; }
+    public Vector3 CenterPoint { get; private set; }
     public List<Zone> ZonesToAttack { get; private set; } = new List<Zone>();
     private bool IsPlayerInZone()
     {
@@ -161,7 +166,23 @@ public class GangRetaliation
     {
         if (Game.GameTime - GameTimeStarted >= TimeToReturnToZone)
         {
-            OnPlayerLost();
+            if(Player.RelationshipManager.GangRelationships.CurrentGangKickUp.MissedAmount > 0 || Player.RelationshipManager.GangRelationships.CurrentGangKickUp.MissedPeriods > 0)
+            {
+                OnPlayerLost();
+            }
+            else
+            {
+                if(RandomItems.RandomPercent(Settings.SettingsManager.GangSettings.TerritoryRetaliationAutoDefendPercentage))
+                {
+                    OnPlayerWonWithoutHelping();
+                }
+                else
+                {
+                    OnPlayerLost();
+                }
+            }
+
+            
             return;
         }
         if (IsPlayerInZone())
@@ -212,6 +233,20 @@ public class GangRetaliation
         IsWarfareActive = false;
         EntryPoint.WriteToConsole("GANG RETALIATION EVENT: PLAYER LOST");
     }
+
+
+    private void OnPlayerWonWithoutHelping()
+    {
+        IsWarfareActive = false;
+        SendWonWithoutWorkMessage();
+        TimesPlayerDefendedRetaliation++;
+        GameTimeRetaliationStarted = Game.GameTime;
+        ResetTimedItems();
+        EntryPoint.WriteToConsole($"GANG RETALIATION EVENT: PLAYER WON WITHOUT DOING SHIT TimesPlayerDefendedRetaliation{TimesPlayerDefendedRetaliation}");
+    }
+
+
+
     private void OnPlayerWon()
     {
         //GameTimeEnded = Game.GameTime;
@@ -239,6 +274,12 @@ public class GangRetaliation
     {
         HasPlayerEnteredArea = true;
         GameTimeReturnedToZone = Game.GameTime;
+
+        if(CenterPoint == Vector3.Zero)
+        {
+            CenterPoint = Player.Position;
+        }
+
         SendReturnedMessage();
         EntryPoint.WriteToConsole("GANG RETALIATION EVENT: PLAYER RETRUNED TO ZONE FOR FIRST TIME");
     }
@@ -277,6 +318,16 @@ public class GangRetaliation
             $"{TargetGang.ColorPrefix}{TargetGang.ShortName}~s~ has been beaten back. We still control {ZonesToAttack.FirstOrDefault()?.DisplayName}.",
 
             $"So many {TargetGang.ColorPrefix}{TargetGang.ShortName}~s~ bodies in {ZonesToAttack.FirstOrDefault()?.DisplayName}. They've got their tail between their legs.",
+                                };
+        Player.CellPhone.AddScheduledText(Player.CurrentGang.Contact, Replies.PickRandom(), 1, false);
+    }
+    private void SendWonWithoutWorkMessage()
+    {
+        List<string> Replies = new List<string>() {
+                                $"We held off {TargetGang.ColorPrefix}{TargetGang.ShortName}~s~ without you in {ZonesToAttack.FirstOrDefault()?.DisplayName}. Where the fuck were you?",
+            $"{TargetGang.ColorPrefix}{TargetGang.ShortName}~s~ has been beaten back despite you not helping. We still control {ZonesToAttack.FirstOrDefault()?.DisplayName}.",
+
+            $"So many {TargetGang.ColorPrefix}{TargetGang.ShortName}~s~ bodies in {ZonesToAttack.FirstOrDefault()?.DisplayName}. Why weren't you there?.",
                                 };
         Player.CellPhone.AddScheduledText(Player.CurrentGang.Contact, Replies.PickRandom(), 1, false);
     }

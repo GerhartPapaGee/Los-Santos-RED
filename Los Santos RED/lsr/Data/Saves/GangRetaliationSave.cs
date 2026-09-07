@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ public class GangRetaliationSave
     public string TargetGangID { get; set; }
     public List<string> ZoneIds { get; set; }
     public int TimesPlayerDefendedRetaliation { get; set; }
+    public Vector3 CenterPoint { get; set; }
 }
 

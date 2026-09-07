@@ -1,4 +1,5 @@
 ﻿using LosSantosRED.lsr.Locations;
+using Rage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace LosSantosRED.lsr.Interface
         LocationData CurrentLocation { get; }
         bool IsAliveAndFree { get; }
         RelationshipManager RelationshipManager { get; }
+        Vector3 Position { get; }
     }
 }

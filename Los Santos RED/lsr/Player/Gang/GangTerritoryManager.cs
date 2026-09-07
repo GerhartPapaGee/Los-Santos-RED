@@ -86,7 +86,7 @@ public class GangTerritoryManager
             int CasualityLimit = RandomItems.GetRandomNumberInt(gangToBattle.TakeoverTerritoryCasualtyLimitMin, gangToBattle.TakeoverTerritoryCasualtyLimitMax);
 
 
-            existingWar = new GangWar(Player,gangToBattle, new List<Zone>() { zone }, CasualityLimit, this, World);// gangToBattle.GangWarCasualtyLimit);
+            existingWar = new GangWar(Player,gangToBattle, new List<Zone>() { zone }, CasualityLimit, this, World, Vector3.Zero);// gangToBattle.GangWarCasualtyLimit);
             GangWars.Add(existingWar);
             existingWar.Start();
             EntryPoint.WriteToConsole($"Gang War Started with {gangToBattle.ShortName} in {zone.DisplayName}");
@@ -111,7 +111,7 @@ public class GangTerritoryManager
             {
                 SetTookOverZone(zone, existingWar);
             }
-            GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, existingWar.TargetGang, existingWar.ZonesToAttack, Settings);
+            GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, existingWar.TargetGang, existingWar.ZonesToAttack, Settings, existingWar.CenterPoint);
             gr.Setup();
             Retaliations.Add(gr);
 
@@ -164,7 +164,7 @@ public class GangTerritoryManager
 
 
 
-        GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, toFight, new List<Zone> { zone }, Settings);
+        GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, toFight, new List<Zone> { zone }, Settings, Vector3.Zero);
         gr.Setup();
         Retaliations.Add(gr);
     }
@@ -256,19 +256,40 @@ public class GangTerritoryManager
 
 
 
-    public void LoadWar(Gang targetGang, List<Zone> zonesToAttack, int casualityLimit)
+    public void LoadWar(Gang targetGang, List<Zone> zonesToAttack, int casualityLimit, Vector3 centerPoint)
     {
-        GangWar existingWar = new GangWar(Player, targetGang, zonesToAttack, casualityLimit, this, World);// gangToBattle.GangWarCasualtyLimit);
+        GangWar existingWar = new GangWar(Player, targetGang, zonesToAttack, casualityLimit, this, World, centerPoint);// gangToBattle.GangWarCasualtyLimit);
         existingWar.Setup();
         GangWars.Add(existingWar);
     }
 
-    public void LoadRetaliation(Gang targetGang, List<Zone> zonesToAttack, int timePlayerDefended)
+    public void LoadRetaliation(Gang targetGang, List<Zone> zonesToAttack, int timePlayerDefended, Vector3 centerPoint)
     {
-        GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, targetGang, zonesToAttack, Settings, timePlayerDefended);
+        GangRetaliation gr = new GangRetaliation(Player, this, Game.GameTime, targetGang, zonesToAttack, Settings, timePlayerDefended, centerPoint);
         gr.Setup();  
         Retaliations.Add(gr);
     }
+    public Vector3 GetCurrentWarfarePosition(Gang gang)
+    {
+        List<Zone> toReturn = new List<Zone>();
+        if (gang == null)
+        {
+            return Vector3.Zero;
+        }
+        GangWar existingWar = GangWars.Where(x => x.IsWarfareActive && !x.IsEnded && x.TargetGang != null && x.TargetGang.ID == gang.ID).FirstOrDefault();
+
+        if (existingWar != null && existingWar.CenterPoint != Vector3.Zero)
+        {
+            return existingWar.CenterPoint;
+        }
+        GangRetaliation gangRetaliation = Retaliations.Where(x => x.IsWarfareActive && !x.IsEnded && x.TargetGang != null && x.TargetGang.ID == gang.ID).FirstOrDefault();
+        if (gangRetaliation != null && gangRetaliation.CenterPoint != Vector3.Zero)
+        {
+            return gangRetaliation.CenterPoint;
+        }
+        return Vector3.Zero;
+    }
+
     public List<Zone> GetCurrentWarfareZones(Gang gang)
     {
         List<Zone> toReturn = new List<Zone>();

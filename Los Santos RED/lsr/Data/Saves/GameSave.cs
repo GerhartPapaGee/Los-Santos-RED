@@ -686,7 +686,7 @@ namespace LosSantosRED.lsr.Data
                     }
                 }
 
-                player.GangTerritoryManager.LoadWar(targetGang, toAttackZones, gws.CasualityLimit);
+                player.GangTerritoryManager.LoadWar(targetGang, toAttackZones, gws.CasualityLimit, gws.CenterPoint);
             }
             foreach (GangRetaliationSave grs in GangRetaliationSaves)
             {
@@ -700,7 +700,7 @@ namespace LosSantosRED.lsr.Data
                         toAttackZones.Add(zone);
                     }
                 }
-                player.GangTerritoryManager.LoadRetaliation(targetGang, toAttackZones, grs.TimesPlayerDefendedRetaliation);
+                player.GangTerritoryManager.LoadRetaliation(targetGang, toAttackZones, grs.TimesPlayerDefendedRetaliation, grs.CenterPoint);
             }
         }
 

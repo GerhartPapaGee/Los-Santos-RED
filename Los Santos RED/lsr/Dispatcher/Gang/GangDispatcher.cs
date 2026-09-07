@@ -259,7 +259,11 @@ public class GangDispatcher
         }
         List<Zone> currentDisputedZones = Player.GangTerritoryManager.GetCurrentWarfareZones(attackingGang);
         bool isPlayerWithinZone = Player.CurrentLocation.CurrentZone != null && currentDisputedZones.Contains(Player.CurrentLocation.CurrentZone);
-        if(isPlayerWithinZone)
+
+        Vector3 CurrentWarPosition = Player.GangTerritoryManager.GetCurrentWarfarePosition(attackingGang);
+
+        bool isPlayerNearbyCenter = CurrentWarPosition != Vector3.Zero && Player.Position.DistanceTo2D(CurrentWarPosition) <= Settings.SettingsManager.GangSettings.WarefareCloseDistance;
+        if (isPlayerWithinZone || isPlayerNearbyCenter)
         {
             DoZoneAssaultSpawn(attackingGang);
             EntryPoint.WriteToConsole($"Gang Dispatcher HandleGangWarfareSpawns zone spawn for {attackingGang.ShortName}");

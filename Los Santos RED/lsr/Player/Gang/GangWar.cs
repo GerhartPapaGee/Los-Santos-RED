@@ -15,7 +15,7 @@ public class GangWar
     private GangTerritoryManager GangTerritoryManager;
     private IGangTerritoryManageable Player;
     private IEntityProvideable World;
-    public GangWar(IGangTerritoryManageable player, Gang targetGang, List<Zone> zonesToAttack, int casualityLimit, GangTerritoryManager gangTerritoryManager, IEntityProvideable world)
+    public GangWar(IGangTerritoryManageable player, Gang targetGang, List<Zone> zonesToAttack, int casualityLimit, GangTerritoryManager gangTerritoryManager, IEntityProvideable world, Vector3 centerPoint)
     {
         Player = player;
         TargetGang = targetGang;
@@ -23,6 +23,7 @@ public class GangWar
         CasualityLimit = casualityLimit;
         GangTerritoryManager = gangTerritoryManager;
         World = world;
+        CenterPoint = centerPoint;
     }
     public Gang TargetGang { get; set; }
     public int Casualites { get; set; }
@@ -32,6 +33,7 @@ public class GangWar
     public bool HasPlayerEnteredArea { get; private set; }
     public int CasualityLimit { get; private set; }
     public uint GameTimeEnded { get; private set; }
+    public Vector3 CenterPoint { get; private set; }
     public List<Zone> ZonesToAttack { get; set; }
     public void SetOutcome(bool isPlayerVictory)
     {
@@ -137,6 +139,11 @@ public class GangWar
         if (IsPlayerInZone())
         {
             HasPlayerEnteredArea = true;
+
+            if (CenterPoint == Vector3.Zero)
+            {
+                CenterPoint = Player.Position;
+            }
             EntryPoint.WriteToConsole("GangWar Player has entered the zone for the first time");
         }
     }
