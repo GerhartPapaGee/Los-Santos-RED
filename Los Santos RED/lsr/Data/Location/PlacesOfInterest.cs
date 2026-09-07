@@ -2793,18 +2793,27 @@ public class PlacesOfInterest : IPlacesOfInterest
             //    CameraDirection = new Vector3(0.8348238f, -0.5354371f, -0.1279697f),
             //    CameraRotation = new Rotator(-7.352283f, 1.50649E-06f, -122.6752f)
             //},
-
-
-            new VehicleModShop(new Vector3(-205.6828f, -1310.683f, 30.29572f), 173.3708f,"Benny's Motorworks","")
-            {
+            new VehicleModShop(new Vector3(-205.7094f, -1306.615f, 31.03303f), 181.1362f,"Benny's Original Motor Works","Lowrider culture and customization.")
+            {// enterance -205.7094f, -1306.615f, 31.03303f), 181.1362f,
                 OpenTime = 0,
                 CloseTime = 24,
-                IsOnSPMap = false,
                 IsOnMPMap = true,
-                //HasNoGarageDoors = true,
+                IsOnSPMap = false,
+                BannerImagePath = "stores\\bennys.png",
+                VehiclePreviewLocation = new SpawnPlace(new Vector3(-212.2025f, -1324.637f, 30.59422f), 158.393f),
                 GarageDoors = new List<InteriorDoor>() { new InteriorDoor(0xE684E276, new Vector3(-205.6828f, -1310.683f, 30.29572f)) { UseDoorSystem = true,DoorSystemHash = -427498890 } },
-                VehiclePreviewLocation = new SpawnPlace(new Vector3(228.374f, -992.5745f, -98.99996f), 178.1117f),
             },
+
+            //new VehicleModShop(new Vector3(-205.6828f, -1310.683f, 30.29572f), 173.3708f,"Benny's Motorworks","")
+            //{
+            //    OpenTime = 0,
+            //    CloseTime = 24,
+            //    IsOnSPMap = false,
+            //    IsOnMPMap = true,
+            //    //HasNoGarageDoors = true,
+            //    GarageDoors = new List<InteriorDoor>() { new InteriorDoor(0xE684E276, new Vector3(-205.6828f, -1310.683f, 30.29572f)) { UseDoorSystem = true,DoorSystemHash = -427498890 } },
+            //    VehiclePreviewLocation = new SpawnPlace(new Vector3(228.374f, -992.5745f, -98.99996f), 178.1117f),
+            //},
 
             new VehicleModShop(new Vector3(854.3461f, -2094.082f, 29.83458f), 173.3708f,"Olson's Autos","Serving Imperial Blvd.")
             {

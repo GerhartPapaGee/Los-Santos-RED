@@ -301,6 +301,8 @@ public class Interiors : IInteriors
     {
         PossibleInteriors.GeneralInteriors.AddRange(new List<Interior>()
         {
+            //Mod Shops
+            new Interior(196609, "Benny's Original Motor Works"),
             //Barber
 
             //Clothes
